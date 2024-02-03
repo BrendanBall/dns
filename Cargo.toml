@@ -1,1 +1,4 @@
-workspace = { members = ["dns_serde"] }
+[workspace]
+members = ["dns_decode", "dns_encode"]
+resolver = "2"
+
