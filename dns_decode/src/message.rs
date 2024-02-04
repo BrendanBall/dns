@@ -4,14 +4,14 @@ use nom::{multi::count, IResult};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum ParseError {
+pub enum DecodeError {
     #[error("unknown parse error")]
     Unknown,
 }
 
-pub fn parse_message(input: &[u8]) -> Result<Message, ParseError> {
+pub fn decode_message(input: &[u8]) -> Result<Message, DecodeError> {
     // TODO improve error reporting
-    let (_, m) = message(input).map_err(|_op| ParseError::Unknown)?;
+    let (_, m) = message(input).map_err(|_op| DecodeError::Unknown)?;
     Ok(m)
 }
 

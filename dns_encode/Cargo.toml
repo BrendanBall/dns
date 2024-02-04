@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 dns_types = { path = "../dns_types" }
+hex = "0.4.3"
+bitvec = "1.0.1"
