@@ -1,4 +1,5 @@
 use crate::{message_header::*, query::*, resource_record::*};
+use dns_types::*;
 use nom::{multi::count, IResult};
 use thiserror::Error;
 
@@ -8,21 +9,10 @@ pub enum ParseError {
     Unknown,
 }
 
-#[derive(Debug, PartialEq)]
-pub struct Message {
-    pub header: MessageHeader,
-    pub queries: Vec<Query>,
-    pub answers: Vec<ResourceRecord>,
-}
-
-impl TryFrom<&[u8]> for Message {
-    type Error = ParseError;
-
-    fn try_from(input: &[u8]) -> Result<Self, Self::Error> {
-        // TODO improve error reporting
-        let (_, m) = message(input).map_err(|_op| ParseError::Unknown)?;
-        Ok(m)
-    }
+pub fn parse_message(input: &[u8]) -> Result<Message, ParseError> {
+    // TODO improve error reporting
+    let (_, m) = message(input).map_err(|_op| ParseError::Unknown)?;
+    Ok(m)
 }
 
 fn message(input: &[u8]) -> IResult<&[u8], Message> {

@@ -5,15 +5,23 @@ version = 3
 [[package]]
 name = "dns_encode"
 version = "0.1.0"
+dependencies = [
+ "dns_types",
+]
 
 [[package]]
 name = "dns_serde"
 version = "0.1.0"
 dependencies = [
+ "dns_types",
  "hex",
  "nom",
  "thiserror",
 ]
+
+[[package]]
+name = "dns_types"
+version = "0.1.0"
 
 [[package]]
 name = "hex"

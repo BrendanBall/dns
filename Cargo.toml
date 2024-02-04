@@ -1,4 +1,4 @@
 [workspace]
-members = ["dns_decode", "dns_encode"]
+members = ["dns_decode", "dns_encode", "dns_types"]
 resolver = "2"
 
