@@ -67,6 +67,7 @@ fn label(input: &[u8]) -> IResult<&[u8], String> {
     if str_length == 0 {
         return Err(Err::Error(Error::new(input, ErrorKind::Eof)));
     }
+    // TODO validate max length
     let (input, str) = take(str_length)(input)?;
     Ok((input, String::from_utf8(str.to_vec()).unwrap()))
 }
