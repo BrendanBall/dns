@@ -1,12 +1,9 @@
 use nom::{
-    bytes::complete::{tag, take},
-    combinator::iterator,
-    error::{Error, ErrorKind, ParseError},
     multi::length_value,
-    number::complete::{be_u128, be_u16, be_u32, be_u8},
-    Compare, Err, IResult, InputIter, InputLength, InputTake, Slice,
+    number::complete::{be_u128, be_u16, be_u32},
+    IResult, InputIter, InputLength, Slice,
 };
-use std::ops::{Range, RangeFrom, RangeTo};
+use std::ops::RangeFrom;
 use std::{
     convert::Into,
     net::{Ipv4Addr, Ipv6Addr},
@@ -125,7 +122,7 @@ where
     }
 }
 
-fn resource_record(input: &[u8]) -> IResult<&[u8], ResourceRecord> {
+pub fn resource_record(input: &[u8]) -> IResult<&[u8], ResourceRecord> {
     let (input, name) = name(input)?;
     let (input, resource_type) = be_u16(input)?;
     let (input, resource_class) = be_u16(input)?;

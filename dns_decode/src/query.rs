@@ -80,7 +80,7 @@ fn name(input: &[u8]) -> IResult<&[u8], Vec<String>> {
     Ok((input, labels))
 }
 
-fn query(input: &[u8]) -> IResult<&[u8], Query> {
+pub fn query(input: &[u8]) -> IResult<&[u8], Query> {
     let (input, name) = name(input)?;
     let (input, query_type) = be_u16(input)?;
     let (input, query_class) = be_u16(input)?;
