@@ -28,8 +28,6 @@ fn aaaa_record<Input>(input: Input) -> IResult<Input, ResourceData>
 where
     Input: Slice<RangeFrom<usize>> + InputIter<Item = u8> + InputLength,
 {
-    // TODO fix
-    println!("{:02x?}", &input.iter_elements().collect::<Vec<u8>>());
     let (input, ip_address) = be_u128(input)?;
     Ok((input, ResourceData::AAAA(Ipv6Addr::from(ip_address))))
 }

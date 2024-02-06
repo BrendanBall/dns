@@ -1,5 +1,5 @@
 [package]
-name = "dns_serde"
+name = "dns_decode"
 version = "0.1.0"
 edition = "2021"
 

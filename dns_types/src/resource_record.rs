@@ -1,5 +1,6 @@
 use std::{
     convert::Into,
+    fmt::Display,
     net::{Ipv4Addr, Ipv6Addr},
 };
 
@@ -72,4 +73,14 @@ pub enum ResourceData {
     AAAA(Ipv6Addr),
     PTR,
     NS,
+}
+
+impl Display for ResourceData {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ResourceData::A(ip) => write!(f, "{}", ip),
+            ResourceData::AAAA(ip) => write!(f, "{}", ip),
+            _ => todo!(),
+        }
+    }
 }
