@@ -3,10 +3,7 @@ use clap::{Parser, ValueEnum};
 use dns_decode::{decode_domain_name, decode_message};
 use dns_encode::encode_message;
 use dns_types::*;
-use std::{
-    fmt::Display,
-    net::{Ipv4Addr, UdpSocket},
-};
+use std::net::{Ipv4Addr, UdpSocket};
 
 #[derive(Parser)]
 #[command(about, long_about = None)]
@@ -14,23 +11,15 @@ struct Cli {
     domain_name: String,
     #[arg(short, long, default_value_t = Ipv4Addr::from([1,1,1,1]))]
     server: Ipv4Addr,
-    #[arg(short, long, default_value_t = ResourceType::A)]
+    #[arg(short, long, value_enum, default_value_t = ResourceType::A)]
     resource_type: ResourceType,
 }
 
 #[derive(ValueEnum, Clone, Debug)]
+#[clap(rename_all = "verbatim")]
 enum ResourceType {
     A,
     AAAA,
-}
-
-impl Display for ResourceType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ResourceType::A => write!(f, "a"),
-            ResourceType::AAAA => write!(f, "aaaa"),
-        }
-    }
 }
 
 impl Into<QueryType> for ResourceType {
