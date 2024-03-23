@@ -10,7 +10,9 @@ use std::{
     net::{Ipv4Addr, Ipv6Addr},
 };
 
-fn name(input: &[u8]) -> IResult<&[u8], Name> {
+use crate::input::DnsFrameInput;
+
+fn name(input: DnsFrameInput) -> IResult<DnsFrameInput, Name> {
     // TODO implement pointer/label properly
     let (input, pointer) = be_u16(input)?;
     Ok((input, Name::Pointer(pointer & 0xc0ff)))
@@ -45,7 +47,7 @@ where
     }
 }
 
-pub fn resource_record(input: &[u8]) -> IResult<&[u8], ResourceRecord> {
+pub fn resource_record(input: DnsFrameInput) -> IResult<DnsFrameInput, ResourceRecord> {
     let (input, name) = name(input)?;
     let (input, resource_type) = be_u16(input)?;
     let (input, resource_class) = be_u16(input)?;
@@ -71,12 +73,15 @@ mod tests {
     #[test]
     fn test_resource_record_a_record() {
         let dns_resource_record_bytes = hex::decode("c00c0001000100005a0200045db8d822").unwrap();
-        let result = resource_record(&dns_resource_record_bytes);
+        let result = resource_record(DnsFrameInput::new(&dns_resource_record_bytes));
 
         assert_eq!(
             result,
             Ok((
-                &b""[..],
+                DnsFrameInput {
+                    frame: &dns_resource_record_bytes,
+                    input: &b""[..],
+                },
                 ResourceRecord {
                     name: Name::Pointer(49164),
                     resource_type: ResourceType::A,
@@ -92,12 +97,15 @@ mod tests {
     fn test_resource_record_aaaa_record() {
         let dns_resource_record_bytes =
             hex::decode("c00c001c00010000eee6001026062800022000010248189325c81946").unwrap();
-        let result = resource_record(&dns_resource_record_bytes);
+        let result = resource_record(DnsFrameInput::new(&dns_resource_record_bytes));
 
         assert_eq!(
             result,
             Ok((
-                &b""[..],
+                DnsFrameInput {
+                    frame: &dns_resource_record_bytes,
+                    input: &b""[..],
+                },
                 ResourceRecord {
                     name: Name::Pointer(49164),
                     resource_type: ResourceType::AAAA,

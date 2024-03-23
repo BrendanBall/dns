@@ -8,11 +8,13 @@ use nom::{
 };
 use std::convert::Into;
 
-fn dns_flags(input: &[u8]) -> IResult<&[u8], Flags> {
+use crate::input::DnsFrameInput;
+
+fn dns_flags(input: DnsFrameInput) -> IResult<DnsFrameInput, Flags> {
     fn dns_flags_inner(
-        input: (&[u8], usize),
-    ) -> IResult<(&[u8], usize), Flags, Error<(&[u8], usize)>> {
-        type BitParseResult<'a> = ((&'a [u8], usize), u8);
+        input: (DnsFrameInput, usize),
+    ) -> IResult<(DnsFrameInput, usize), Flags, Error<(DnsFrameInput, usize)>> {
+        type BitParseResult<'a> = ((DnsFrameInput<'a>, usize), u8);
         let (input, qr): BitParseResult = take(1usize)(input)?;
         let (input, opcode): BitParseResult = take(4usize)(input)?;
         let (input, aa): BitParseResult = take(1usize)(input)?;
@@ -34,10 +36,10 @@ fn dns_flags(input: &[u8]) -> IResult<&[u8], Flags> {
             },
         ))
     }
-    bits::<_, _, Error<(&[u8], usize)>, _, _>(dns_flags_inner)(input)
+    bits::<_, _, Error<(DnsFrameInput, usize)>, _, _>(dns_flags_inner)(input)
 }
 
-pub fn message_header(input: &[u8]) -> IResult<&[u8], MessageHeader> {
+pub fn message_header(input: DnsFrameInput) -> IResult<DnsFrameInput, MessageHeader> {
     let (input, message_id) = be_u16(input)?;
     let (input, flags) = dns_flags(input)?;
     let (input, query_count) = be_u16(input)?;
@@ -65,11 +67,14 @@ mod tests {
     fn message_header_query() {
         let dns_message_bytes = hex::decode("690601000001000000000000").unwrap();
 
-        let result = message_header(&dns_message_bytes);
+        let result = message_header(DnsFrameInput::new(&dns_message_bytes));
         assert_eq!(
             result,
             Ok((
-                &b""[..],
+                DnsFrameInput {
+                    frame: &dns_message_bytes,
+                    input: &b""[..]
+                },
                 MessageHeader {
                     message_id: 0x6906,
                     flags: Flags {
@@ -94,11 +99,14 @@ mod tests {
     fn message_header_response() {
         let dns_message_bytes = hex::decode("690681800001000100000000").unwrap();
 
-        let result = message_header(&dns_message_bytes);
+        let result = message_header(DnsFrameInput::new(&dns_message_bytes));
         assert_eq!(
             result,
             Ok((
-                &b""[..],
+                DnsFrameInput {
+                    frame: &dns_message_bytes[..],
+                    input: &b""[..]
+                },
                 MessageHeader {
                     message_id: 0x6906,
                     flags: Flags {

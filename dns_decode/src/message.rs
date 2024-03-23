@@ -1,4 +1,4 @@
-use crate::{message_header::*, query::*, resource_record::*};
+use crate::{input::DnsFrameInput, message_header::*, query::*, resource_record::*};
 use dns_types::*;
 use nom::{multi::count, IResult};
 use thiserror::Error;
@@ -11,11 +11,15 @@ pub enum DecodeError {
 
 pub fn decode_message(input: &[u8]) -> Result<Message, DecodeError> {
     // TODO improve error reporting
+    let input = DnsFrameInput {
+        frame: input,
+        input: input,
+    };
     let (_, m) = message(input).map_err(|_op| DecodeError::Unknown)?;
     Ok(m)
 }
 
-fn message(input: &[u8]) -> IResult<&[u8], Message> {
+fn message(input: DnsFrameInput) -> IResult<DnsFrameInput, Message> {
     let (input, header) = message_header(input)?;
     let (input, queries) = count(query, header.query_count as usize)(input)?;
     let (input, answers) = count(resource_record, header.answer_count as usize)(input)?;
@@ -39,12 +43,15 @@ mod tests {
     fn test_message_request() {
         let message_bytes =
             hex::decode("690601000001000000000000076578616d706c6503636f6d0000010001").unwrap();
-        let result = message(&message_bytes);
+        let result = message(DnsFrameInput::new(&message_bytes));
 
         assert_eq!(
             result,
             Ok((
-                &b""[..],
+                DnsFrameInput {
+                    frame: &message_bytes,
+                    input: &b""[..],
+                },
                 Message {
                     header: MessageHeader {
                         message_id: 0x6906,
@@ -79,12 +86,15 @@ mod tests {
             "690681800001000100000000076578616d706c6503636f6d0000010001c00c0001000100005a0200045db8d822"
         )
         .unwrap();
-        let result = message(&message_bytes);
+        let result = message(DnsFrameInput::new(&message_bytes));
 
         assert_eq!(
             result,
             Ok((
-                &b""[..],
+                DnsFrameInput {
+                    frame: &message_bytes,
+                    input: &b""[..],
+                },
                 Message {
                     header: MessageHeader {
                         message_id: 0x6906,
