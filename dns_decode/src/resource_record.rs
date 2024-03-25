@@ -10,13 +10,7 @@ use std::{
     net::{Ipv4Addr, Ipv6Addr},
 };
 
-use crate::input::DnsFrameInput;
-
-fn name(input: DnsFrameInput) -> IResult<DnsFrameInput, Name> {
-    // TODO implement pointer/label properly
-    let (input, pointer) = be_u16(input)?;
-    Ok((input, Name::Pointer(pointer & 0xc0ff)))
-}
+use crate::{input::DnsFrameInput, name::name};
 
 fn a_record<Input>(input: Input) -> IResult<Input, ResourceData>
 where
@@ -72,18 +66,21 @@ mod tests {
 
     #[test]
     fn test_resource_record_a_record() {
-        let dns_resource_record_bytes = hex::decode("c00c0001000100005a0200045db8d822").unwrap();
-        let result = resource_record(DnsFrameInput::new(&dns_resource_record_bytes));
+        let message = hex::decode("690681800001000100000000076578616d706c6503636f6d0000010001c00c0001000100005a0200045db8d822").unwrap();
+        let result = resource_record(DnsFrameInput {
+            frame: &message,
+            input: &message[29..],
+        });
 
         assert_eq!(
             result,
             Ok((
                 DnsFrameInput {
-                    frame: &dns_resource_record_bytes,
+                    frame: &message,
                     input: &b""[..],
                 },
                 ResourceRecord {
-                    name: Name::Pointer(49164),
+                    name: vec![String::from("example"), String::from("com")],
                     resource_type: ResourceType::A,
                     resource_class: ResourceClass::Internet,
                     ttl: 23042,
@@ -95,22 +92,25 @@ mod tests {
 
     #[test]
     fn test_resource_record_aaaa_record() {
-        let dns_resource_record_bytes =
-            hex::decode("c00c001c00010000eee6001026062800022000010248189325c81946").unwrap();
-        let result = resource_record(DnsFrameInput::new(&dns_resource_record_bytes));
+        let message =
+            hex::decode("653081800001000100000000076578616d706c6503636f6d00001c0001c00c001c0001000130c8001026062800022000010248189325c81946").unwrap();
+        let result = resource_record(DnsFrameInput {
+            frame: &message,
+            input: &message[29..],
+        });
 
         assert_eq!(
             result,
             Ok((
                 DnsFrameInput {
-                    frame: &dns_resource_record_bytes,
+                    frame: &message,
                     input: &b""[..],
                 },
                 ResourceRecord {
-                    name: Name::Pointer(49164),
+                    name: vec![String::from("example"), String::from("com")],
                     resource_type: ResourceType::AAAA,
                     resource_class: ResourceClass::Internet,
-                    ttl: 61158,
+                    ttl: 78024,
                     rdata: ResourceData::AAAA(Ipv6Addr::from([
                         0x2606, 0x2800, 0x0220, 0x0001, 0x0248, 0x1893, 0x25c8, 0x1946
                     ]))

@@ -118,7 +118,7 @@ mod tests {
                         query_class: QueryClass::Internet,
                     }],
                     answers: vec![ResourceRecord {
-                        name: Name::Pointer(49164),
+                        name: vec![String::from("example"), String::from("com")],
                         resource_type: ResourceType::A,
                         resource_class: ResourceClass::Internet,
                         ttl: 23042,

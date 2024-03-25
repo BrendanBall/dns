@@ -8,9 +8,8 @@ use std::{
 };
 
 use nom::{
-    error::{Error, ErrorKind, ParseError},
-    AsBytes, Compare, CompareResult, Err, ErrorConvert, ExtendInto, FindSubstring, FindToken,
-    InputIter, InputLength, InputTake, InputTakeAtPosition, Offset, ParseTo, Slice,
+    AsBytes, Compare, CompareResult, ExtendInto, FindSubstring, FindToken, InputIter, InputLength,
+    InputTake, Offset, ParseTo, Slice,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]

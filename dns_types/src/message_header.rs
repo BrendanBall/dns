@@ -52,7 +52,7 @@ impl Into<Opcode> for u8 {
             1 => Opcode::IQuery,
             2 => Opcode::Status,
             3 => Opcode::Unknown,
-            _ => unreachable!(),
+            opcode => unreachable!("unexpected opcode: {}", opcode),
         }
     }
 }

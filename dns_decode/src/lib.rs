@@ -2,6 +2,7 @@ pub mod domain_name;
 pub mod input;
 pub mod message;
 pub mod message_header;
+pub mod name;
 pub mod query;
 pub mod resource_record;
 pub use domain_name::decode_domain_name;

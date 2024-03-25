@@ -51,7 +51,7 @@ fn main() -> Result<()> {
         panic!("buffer is too small");
     }
     let decoded_response = decode_message(&receive_buffer[0..received_size]).unwrap();
-    println!("{}", decoded_response);
+    println!("{:#?}", decoded_response);
     Ok(())
 }
 

@@ -6,17 +6,11 @@ use std::{
 
 #[derive(Debug, PartialEq)]
 pub struct ResourceRecord {
-    pub name: Name,
+    pub name: Vec<String>,
     pub resource_type: ResourceType,
     pub resource_class: ResourceClass,
     pub ttl: u32,
     pub rdata: ResourceData,
-}
-
-#[derive(Debug, PartialEq)]
-pub enum Name {
-    Value(Vec<String>),
-    Pointer(u16),
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
