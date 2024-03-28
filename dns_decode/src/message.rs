@@ -70,7 +70,7 @@ mod tests {
                         additional_count: 0,
                     },
                     queries: vec![Query {
-                        name: vec![String::from("example"), String::from("com")],
+                        name: Name(vec![String::from("example"), String::from("com")]),
                         query_type: QueryType::A,
                         query_class: QueryClass::Internet,
                     }],
@@ -113,12 +113,12 @@ mod tests {
                         additional_count: 0,
                     },
                     queries: vec![Query {
-                        name: vec![String::from("example"), String::from("com")],
+                        name: Name(vec![String::from("example"), String::from("com")]),
                         query_type: QueryType::A,
                         query_class: QueryClass::Internet,
                     }],
                     answers: vec![ResourceRecord {
-                        name: vec![String::from("example"), String::from("com")],
+                        name: Name(vec![String::from("example"), String::from("com")]),
                         resource_type: ResourceType::A,
                         resource_class: ResourceClass::Internet,
                         ttl: 23042,

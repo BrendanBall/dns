@@ -1,4 +1,4 @@
-use dns_types::query::*;
+use dns_types::{query::*, Name};
 
 use nom::{number::complete::be_u16, IResult};
 use std::convert::Into;
@@ -12,7 +12,7 @@ pub fn query(input: DnsFrameInput) -> IResult<DnsFrameInput, Query> {
     Ok((
         input,
         Query {
-            name,
+            name: Name(name),
             query_type: query_type.into(),
             query_class: query_class.into(),
         },
@@ -36,7 +36,7 @@ mod tests {
                     input: &b""[..],
                 },
                 Query {
-                    name: vec![String::from("example"), String::from("com")],
+                    name: Name(vec![String::from("example"), String::from("com")]),
                     query_type: QueryType::A,
                     query_class: QueryClass::Internet,
                 }
