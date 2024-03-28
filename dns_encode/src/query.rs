@@ -2,7 +2,7 @@ use dns_types::query::*;
 use std::io::{Error, Write};
 
 pub fn encode_query<W: Write>(query: &Query, writer: &mut W) -> Result<(), Error> {
-    for label in query.name.as_slice() {
+    for label in query.name.0.as_slice() {
         let label_bytes = label.as_bytes();
         let label_len = [label_bytes.len() as u8];
         writer.write_all(&label_len)?;
@@ -20,13 +20,15 @@ pub fn encode_query<W: Write>(query: &Query, writer: &mut W) -> Result<(), Error
 
 #[cfg(test)]
 mod tests {
+    use dns_types::Name;
+
     use super::*;
 
     #[test]
     fn test_encode_query() {
         let query_bytes = hex::decode("076578616d706c6503636f6d0000010001").unwrap();
         let query = Query {
-            name: vec![String::from("example"), String::from("com")],
+            name: Name(vec![String::from("example"), String::from("com")]),
             query_type: QueryType::A,
             query_class: QueryClass::Internet,
         };

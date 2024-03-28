@@ -1,4 +1,4 @@
-use std::convert::Into;
+use std::{convert::Into, fmt::Display};
 
 #[derive(Debug, PartialEq)]
 pub struct MessageHeader {
@@ -10,6 +10,26 @@ pub struct MessageHeader {
     pub additional_count: u16,
 }
 
+impl Display for MessageHeader {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(
+            f,
+            ";; ->>HEADER<<- opcode: {}, rcode: {}, id: {}",
+            self.flags.opcode, self.flags.rcode, self.message_id
+        )?;
+        writeln!(
+            f,
+            ";; flags:{} ; QUERY: {}, ANSWER: {}, AUTHORITY: {}, ADDITIONAL: {}",
+            self.flags,
+            self.query_count,
+            self.answer_count,
+            self.name_server_count,
+            self.additional_count,
+        )?;
+        Ok(())
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub struct Flags {
     pub qr: QR,
@@ -19,6 +39,27 @@ pub struct Flags {
     pub recursion_desired: RecursionDesired,
     pub recursion_available: RecursionAvailable,
     pub rcode: Rcode,
+}
+
+impl Display for Flags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.qr == QR::Response {
+            write!(f, " qr")?;
+        }
+        if self.aa == AuthoritativeAnswer::Authoritative {
+            write!(f, " aa")?;
+        }
+        if self.truncated == Truncated::Truncated {
+            write!(f, " tc")?;
+        }
+        if self.recursion_desired == RecursionDesired::Desired {
+            write!(f, " rd")?;
+        }
+        if self.recursion_available == RecursionAvailable::Available {
+            write!(f, " ra")?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -43,6 +84,19 @@ pub enum Opcode {
     IQuery,
     Status,
     Unknown,
+}
+
+impl Display for Opcode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Opcode::Query => "QUERY",
+            Opcode::IQuery => "IQUERY",
+            Opcode::Status => "STATUS",
+            Opcode::Unknown => "UNKNOWN",
+        };
+        write!(f, "{}", s)?;
+        Ok(())
+    }
 }
 
 impl Into<Opcode> for u8 {
@@ -129,6 +183,21 @@ pub enum Rcode {
     NameError,
     NotImplemented,
     Refused,
+}
+
+impl Display for Rcode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Rcode::NoError => "NOERROR",
+            Rcode::FormatError => "FORMATERROR",
+            Rcode::ServerFailure => "SERVERFAILURE",
+            Rcode::NameError => "NAMEERROR",
+            Rcode::NotImplemented => "NOTIMPLEMENTED",
+            Rcode::Refused => "REFUSED",
+        };
+        write!(f, "{}", s)?;
+        Ok(())
+    }
 }
 
 impl Into<Rcode> for u8 {

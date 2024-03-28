@@ -51,7 +51,7 @@ fn main() -> Result<()> {
         panic!("buffer is too small");
     }
     let decoded_response = decode_message(&receive_buffer[0..received_size]).unwrap();
-    println!("{:#?}", decoded_response);
+    println!("{}", decoded_response);
     Ok(())
 }
 
@@ -82,7 +82,7 @@ fn create_message<QT: Into<QueryType>>(
             additional_count: 0,
         },
         queries: vec![Query {
-            name: query_name,
+            name: Name(query_name),
             query_type: query_type.into(),
             query_class: QueryClass::Internet,
         }],

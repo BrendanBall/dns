@@ -1,10 +1,23 @@
-use std::convert::Into;
+use std::{convert::Into, fmt::Display};
+
+use crate::Name;
 
 #[derive(Debug, PartialEq)]
 pub struct Query {
-    pub name: Vec<String>,
+    pub name: Name,
     pub query_type: QueryType,
     pub query_class: QueryClass,
+}
+
+impl Display for Query {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(
+            f,
+            ";; {}\t\t{}\t{}",
+            self.name, self.query_class, self.query_type
+        )?;
+        Ok(())
+    }
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -20,6 +33,24 @@ pub enum QueryType {
     AAAA,
     ANY,
     Unknown(u16),
+}
+
+impl Display for QueryType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            QueryType::A => write!(f, "A"),
+            QueryType::NS => write!(f, "NS"),
+            QueryType::CNAME => write!(f, "CNAME"),
+            QueryType::SOA => write!(f, "SOA"),
+            QueryType::WKS => write!(f, "WKS"),
+            QueryType::PTR => write!(f, "PTR"),
+            QueryType::MX => write!(f, "MX"),
+            QueryType::SRV => write!(f, "SRV"),
+            QueryType::AAAA => write!(f, "AAAA"),
+            QueryType::ANY => write!(f, "ANY"),
+            QueryType::Unknown(_) => write!(f, "Unknown"),
+        }
+    }
 }
 
 impl Into<QueryType> for u16 {
@@ -62,6 +93,15 @@ impl Into<u16> for QueryType {
 pub enum QueryClass {
     Internet,
     Unknown(u16),
+}
+
+impl Display for QueryClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            QueryClass::Internet => write!(f, "IN"),
+            QueryClass::Unknown(i) => write!(f, "UNKNOWN({})", i),
+        }
+    }
 }
 
 impl Into<QueryClass> for u16 {

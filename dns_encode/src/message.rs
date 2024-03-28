@@ -38,7 +38,7 @@ mod tests {
                 additional_count: 0,
             },
             queries: vec![Query {
-                name: vec![String::from("example"), String::from("com")],
+                name: Name(vec![String::from("example"), String::from("com")]),
                 query_type: QueryType::A,
                 query_class: QueryClass::Internet,
             }],

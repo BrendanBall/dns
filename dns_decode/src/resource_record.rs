@@ -1,4 +1,4 @@
-use dns_types::resource_record::*;
+use dns_types::{resource_record::*, Name};
 use nom::{
     multi::length_value,
     number::complete::{be_u128, be_u16, be_u32},
@@ -51,7 +51,7 @@ pub fn resource_record(input: DnsFrameInput) -> IResult<DnsFrameInput, ResourceR
     Ok((
         input,
         ResourceRecord {
-            name,
+            name: Name(name),
             resource_type,
             resource_class: resource_class.into(),
             ttl,
@@ -80,7 +80,7 @@ mod tests {
                     input: &b""[..],
                 },
                 ResourceRecord {
-                    name: vec![String::from("example"), String::from("com")],
+                    name: Name(vec![String::from("example"), String::from("com")]),
                     resource_type: ResourceType::A,
                     resource_class: ResourceClass::Internet,
                     ttl: 23042,
@@ -107,7 +107,7 @@ mod tests {
                     input: &b""[..],
                 },
                 ResourceRecord {
-                    name: vec![String::from("example"), String::from("com")],
+                    name: Name(vec![String::from("example"), String::from("com")]),
                     resource_type: ResourceType::AAAA,
                     resource_class: ResourceClass::Internet,
                     ttl: 78024,

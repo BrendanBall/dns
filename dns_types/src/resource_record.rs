@@ -4,13 +4,26 @@ use std::{
     net::{Ipv4Addr, Ipv6Addr},
 };
 
+use crate::Name;
+
 #[derive(Debug, PartialEq)]
 pub struct ResourceRecord {
-    pub name: Vec<String>,
+    pub name: Name,
     pub resource_type: ResourceType,
     pub resource_class: ResourceClass,
     pub ttl: u32,
     pub rdata: ResourceData,
+}
+
+impl Display for ResourceRecord {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(
+            f,
+            "{}\t\t{}\t{}\t{}\t{}",
+            self.name, self.ttl, self.resource_class, self.resource_type, self.rdata
+        )?;
+        Ok(())
+    }
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
@@ -25,6 +38,23 @@ pub enum ResourceType {
     SRV,
     AAAA,
     Unknown(u16),
+}
+
+impl Display for ResourceType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            ResourceType::A => write!(f, "A"),
+            ResourceType::NS => write!(f, "NS"),
+            ResourceType::CNAME => write!(f, "CNAME"),
+            ResourceType::SOA => write!(f, "SOA"),
+            ResourceType::WKS => write!(f, "WKS"),
+            ResourceType::PTR => write!(f, "PTR"),
+            ResourceType::MX => write!(f, "MX"),
+            ResourceType::SRV => write!(f, "SRV"),
+            ResourceType::AAAA => write!(f, "AAAA"),
+            ResourceType::Unknown(_) => write!(f, "Unknown"),
+        }
+    }
 }
 
 impl Into<ResourceType> for u16 {
@@ -48,6 +78,15 @@ impl Into<ResourceType> for u16 {
 pub enum ResourceClass {
     Internet,
     Unknown(u16),
+}
+
+impl Display for ResourceClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match *self {
+            ResourceClass::Internet => write!(f, "IN"),
+            ResourceClass::Unknown(i) => write!(f, "UNKNOWN({})", i),
+        }
+    }
 }
 
 impl Into<ResourceClass> for u16 {
