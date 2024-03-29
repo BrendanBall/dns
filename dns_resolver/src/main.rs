@@ -31,26 +31,24 @@ impl Into<QueryType> for ResourceType {
     }
 }
 
+const DNS_PORT: u16 = 53;
+const DNS_MAX_BUFFER_SIZE: usize = 512;
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
     let socket = UdpSocket::bind("0.0.0.0:0")?;
 
-    let mut send_buffer: Vec<u8> = Vec::with_capacity(100);
+    let mut send_buffer: Vec<u8> = Vec::with_capacity(DNS_MAX_BUFFER_SIZE);
     let message = create_message(&cli.domain_name, cli.resource_type, rand::random())?;
     encode_message(&message, &mut send_buffer)?;
 
-    socket.send_to(&send_buffer, (cli.server, 53))?;
+    socket.connect((cli.server, DNS_PORT))?;
+    socket.send(&send_buffer)?;
 
-    // Receives a single datagram message on the socket. If `buf` is too small to hold
-    // the message, it will be cut off.
-    let mut receive_buffer = [0u8; 300];
-    let (received_size, _src) = socket.recv_from(&mut receive_buffer)?;
-    if received_size == receive_buffer.len() {
-        // TODO handle buffer better
-        panic!("buffer is too small");
-    }
-    let decoded_response = decode_message(&receive_buffer[0..received_size]).unwrap();
+    let mut receive_buffer = [0u8; DNS_MAX_BUFFER_SIZE];
+    let received_size = socket.recv(&mut receive_buffer)?;
+    let decoded_response = decode_message(&receive_buffer[0..received_size])?;
     println!("{}", decoded_response);
     Ok(())
 }
